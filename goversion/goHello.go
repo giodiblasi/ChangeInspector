@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -87,13 +88,35 @@ func parse(input string) FileInfos {
 	return fileInfoMap
 }
 
+/*OrderableFileInfo ...*/
+type OrderableFileInfo struct {
+	FileName string
+	Info     FileInfo
+}
+
+/*ByChanges ...*/
+type ByChanges []OrderableFileInfo
+
+func (a ByChanges) Len() int           { return len(a) }
+func (a ByChanges) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByChanges) Less(i, j int) bool { return a[i].Info.TotalChanges < a[j].Info.TotalChanges }
+
 func main() {
 	var result string = getCommitsResult(os.Args[1])
 	var fileInfos FileInfos = parse(result)
 
-	for fileName, fileInfo := range fileInfos {
-		fmt.Println(fileName)
-		fmt.Println(fileInfo.TotalChanges)
+	fileInfoArray := make([]OrderableFileInfo, 0)
+	for name, info := range fileInfos {
+		fileInfoArray = append(fileInfoArray, OrderableFileInfo{
+			FileName: name,
+			Info:     info,
+		})
+	}
+
+	sort.Sort(sort.Reverse(ByChanges(fileInfoArray)))
+
+	for _, fileInfo := range fileInfoArray {
+		fmt.Println("file:", fileInfo.FileName, "changed", fileInfo.Info.TotalChanges, "times in", len(fileInfo.Info.Commits), "commits")
 	}
 
 }
