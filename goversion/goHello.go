@@ -22,6 +22,16 @@ type FileInfo struct {
 	TotalChanges   int64
 }
 
+func emptyFileInfo() *FileInfo {
+	fileInfo := FileInfo{
+		Commits:        make([]commitInfo, 0),
+		TotalAdds:      0,
+		TotalRemotions: 0,
+		TotalChanges:   0,
+	}
+	return &fileInfo
+}
+
 func getCommitsResult(path string) string {
 	cmd := exec.Command("bash", "stat", path)
 	out, _ := cmd.CombinedOutput()
@@ -63,12 +73,7 @@ func parse(input string) FileInfos {
 
 			fileInfo, ok := fileInfoMap[fileName]
 			if !ok {
-				fileInfo = FileInfo{
-					Commits:        make([]commitInfo, 0),
-					TotalAdds:      0,
-					TotalRemotions: 0,
-					TotalChanges:   0,
-				}
+				fileInfo = *emptyFileInfo()
 			}
 
 			fileInfoMap[fileName] = FileInfo{
