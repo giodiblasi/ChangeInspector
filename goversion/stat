@@ -1,4 +1,0 @@
-#!/bin/sh
-REPO_FOLDER=$1
-cd $REPO_FOLDER
-git log --pretty=format:'---------------------------%n%h%n*******%n%an%n*******%n%B*******%n' --numstat
