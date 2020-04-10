@@ -5,14 +5,8 @@ import (
 	"sort"
 )
 
-/*OrderableFileInfo ...*/
-type OrderableFileInfo struct {
-	FileName string
-	Info     commits.FileInfo
-}
-
 /*GetSorted ...*/
-func GetSorted(fileInfos commits.FileInfos) []OrderableFileInfo {
+func GetSorted(fileInfos commits.FileInfos, sortCriteria sortCriteria) []OrderableFileInfo {
 	fileInfoArray := make([]OrderableFileInfo, 0)
 	for name, info := range fileInfos {
 		fileInfoArray = append(fileInfoArray, OrderableFileInfo{
@@ -21,9 +15,7 @@ func GetSorted(fileInfos commits.FileInfos) []OrderableFileInfo {
 		})
 	}
 
-	sort.Slice(fileInfoArray, func(i, j int) bool {
-		return fileInfoArray[i].Info.TotalChanges > fileInfoArray[j].Info.TotalChanges
-	})
+	sort.Slice(fileInfoArray, sortCriteria.getCriteria(fileInfoArray))
 
 	return fileInfoArray
 }

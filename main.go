@@ -15,10 +15,11 @@ func getCommitsResult(path string) string {
 }
 
 func main() {
-	var result string = getCommitsResult(os.Args[1])
+	var gitFolder string = os.Args[1]
+	var result string = getCommitsResult(gitFolder)
 	var fileInfos commits.FileInfos = commits.Parse(result)
 
-	for _, fileInfo := range sortedcommits.GetSorted(fileInfos) {
+	for _, fileInfo := range sortedcommits.GetSorted(fileInfos, sortedcommits.ByCommits{}) {
 		fmt.Println("file:", fileInfo.FileName, "changed", fileInfo.Info.TotalChanges, "times in", len(fileInfo.Info.Commits), "commits")
 	}
 
