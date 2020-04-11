@@ -2,7 +2,6 @@ package main
 
 import (
 	"ChangeInspector/commits"
-	"ChangeInspector/sortedcommits"
 	"ChangeInspector/web"
 	"os"
 	"os/exec"
@@ -18,8 +17,7 @@ func main() {
 	var gitFolder string = os.Args[1]
 	var result string = getCommitsResult(gitFolder)
 	var filesInfo commits.FileInfos = commits.Parse(result)
-	data := sortedcommits.GetSorted(filesInfo, sortedcommits.ByChanges{})
-	web.StartServer(data)
+	web.StartServer(filesInfo)
 
 	// Console
 	// for _, fileInfo := range sortedcommits.GetSorted(filesInfo, sortedcommits.ByCommits{}) {

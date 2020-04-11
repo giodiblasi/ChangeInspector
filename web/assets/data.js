@@ -1,61 +1,65 @@
+const showReport = (data) => {
 
+    const dataArray = Object.keys(data).map(k => ({
+        FileName: k,
+        Info: data[k]
+    }))
 
+    google.charts.load('current', { 'packages': ['bar'] });
 
+    function draw(dataArray, title, dataLabels, element) {
+        var gdata = google.visualization.arrayToDataTable([
+            dataLabels,
+            ...dataArray
+        ]);
 
-const showReport = (data)=>{
-    console.log(data);
-    loadD3 = async () => {
-        var script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.async = true;
-            script.src = 'https://d3js.org/d3.v5.min.js';
-            document.head.appendChild(script);
-            await new Promise(resolve=>{
-            script.addEventListener('load', () => {
-                this.isLoaded = true
-                resolve()
-              })
-            });
+        var options = {
+            chart: {
+                title,
+            },
+            bars: 'horizontal'
+        };
+
+        var chart = new google.charts.Bar(element);
+        chart.draw(gdata, google.charts.Bar.convertOptions(options));
     }
 
-    barChart = () => {
-        const values = data.map(d=>d.Info.TotalChanges);
-        width = 420
-        x = d3.scaleLinear()
-            .domain([0, d3.max(values)])
-            .range([0, width])
-        y = d3.scaleBand()
-            .domain(d3.range(values.length))
-            .range([0, 20 * values.length])
-        
-        const svg = d3.create("svg")
-            .attr("width", width)
-            .attr("height", y.range()[1])
-            .attr("font-family", "sans-serif")
-            .attr("font-size", "10")
-            .attr("text-anchor", "end");
-    
-        const bar = svg.selectAll("g")
-            .data(values)
-            .join("g")
-            .attr("transform", (d, i) => `translate(0,${y(i)})`);
-    
-        bar.append("rect")
-            .attr("fill", "steelblue")
-            .attr("width", x)
-            .attr("height", y.bandwidth() - 1);
-    
-        bar.append("text")
-            .attr("fill", "white")
-            .attr("x", d => x(d) - 3)
-            .attr("y", y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .text((d,i) => data[i].FileName);
-    
-        return svg.node();
+ 
+    //next: create sort data API 
+
+    const drawChanges = async () => {
+        return new Promise(resolve => {
+            const changesData = dataArray
+                .sort((a, b) => b.Info.TotalChanges - a.Info.TotalChanges)
+                .slice(10)
+                .map(d => [d.FileName, d.Info.TotalChanges]);
+            google.charts.setOnLoadCallback(() => draw(
+                changesData,
+                "File Changes",
+                ["File", "Changes"],
+                document.getElementById('chart_div_changes')));
+            resolve();
+        });
     }
 
-    //await loadD3();
-    var node = barChart();
-    document.body.appendChild(node);
+    const drawCommits = async () => {
+        return new Promise(resolve => {
+            const commitsData = dataArray
+                .sort((a, b) => b.Info.Commits.length - a.Info.Commits.length)
+                .slice(10)
+                .map(d => [d.FileName, d.Info.Commits.length]);
+
+
+            google.charts.setOnLoadCallback(() => draw(
+                commitsData,
+                "File Commits",
+                ["File", "Commits"],
+                document.getElementById('chart_div_commits')));
+            resolve();
+        });
+    }
+
+    drawChanges();
+    drawCommits();
+
 }

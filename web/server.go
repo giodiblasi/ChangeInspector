@@ -1,7 +1,7 @@
 package web
 
 import (
-	"ChangeInspector/sortedcommits"
+	"ChangeInspector/commits"
 	"encoding/json"
 	"html/template"
 	"net/http"
@@ -21,7 +21,7 @@ func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) 
 }
 
 /*StartServer ...*/
-func StartServer(filesInfo []sortedcommits.OrderableFileInfo) {
+func StartServer(filesInfo commits.FileInfos) {
 	data, _ := json.Marshal(filesInfo)
 	model := pageModel{Title: "ChangeInspector", FilesInfo: string(data)}
 
