@@ -1,8 +1,12 @@
 <html>
     <head>
         <script src="/assets/data.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
     </head>
     <body>
         <h1>{{.Title}}</h1>
     </body>
+    <script type="text/javascript">
+       showReport(JSON.parse({{.FilesInfo}}))
+    </script>
 </html>
