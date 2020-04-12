@@ -2,8 +2,7 @@ package main
 
 import (
 	"ChangeInspector/commits"
-	"ChangeInspector/sortedcommits"
-	"fmt"
+	"ChangeInspector/web"
 	"os"
 	"os/exec"
 )
@@ -17,10 +16,12 @@ func getCommitsResult(path string) string {
 func main() {
 	var gitFolder string = os.Args[1]
 	var result string = getCommitsResult(gitFolder)
-	var fileInfos commits.FileInfos = commits.Parse(result)
+	var filesInfo commits.FileInfos = commits.Parse(result)
+	web.StartServer(filesInfo)
 
-	for _, fileInfo := range sortedcommits.GetSorted(fileInfos, sortedcommits.ByCommits{}) {
-		fmt.Println("file:", fileInfo.FileName, "changed", fileInfo.Info.TotalChanges, "times in", len(fileInfo.Info.Commits), "commits")
-	}
+	// Console
+	// for _, fileInfo := range sortedcommits.GetSorted(filesInfo, sortedcommits.ByCommits{}) {
+	// 	fmt.Println("file:", fileInfo.FileName, "changed", fileInfo.Info.TotalChanges, "times in", len(fileInfo.Info.Commits), "commits")
+	// }
 
 }
