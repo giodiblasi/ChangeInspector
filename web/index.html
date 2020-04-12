@@ -1,18 +1,35 @@
 <html>
-    <head>
-        <script src="/assets/data.js"></script>
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <style>
-        </style>
-    </head>
-    <body>
-        <h1>{{.Title}}</h1>
-        <div id="graph_container">
-            <div id="chart_div_changes" style="width: 900px; height: 300px;"></div>
-            <div id="chart_div_commits" style="width: 900px; height: 300px;"></div>
-        </div>  
-    </body>
-    <script type="text/javascript">
-       showReport()
-    </script>
+
+<head>
+    <script src="/assets/data.js"></script>
+    <script src="/assets/detail.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+    <h1>{{.Title}}</h1>
+    <div id="graph_container">
+        <div id="chart_div_changes" style="width: 900px; height: 300px;"></div>
+        <div id="chart_div_commits" style="width: 900px; height: 300px;"></div>
+        <div id="file_details" style="width: 900px; height: 300px;"></div>
+    </div>
+</body>
+<script type="text/javascript">
+    showReport();
+    const detail = initDetail();
+    [
+        document.getElementById('chart_div_commits'),
+        document.getElementById('chart_div_changes')
+    ].forEach(elem => {
+        elem.addEventListener('file_selected', function (e) {
+            detail.update(e.detail)
+        }, false);
+    })
+
+
+
+</script>
+
 </html>

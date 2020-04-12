@@ -14,13 +14,20 @@ const showReport = () => {
             },
             bars: 'horizontal'
         };
-
+        
         var chart = new google.charts.Bar(element);
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+        function selectHandler(e) {
+            const selectedItem = chart.getSelection()[0];
+            const selectedFileName = gdata.getValue(selectedItem.row, 0);
+            var event = new CustomEvent('file_selected', {detail: selectedFileName});
+            element.dispatchEvent(event);
+        }
+
         chart.draw(gdata, google.charts.Bar.convertOptions(options));
     }
 
  
-    //next: create sort data API 
     const getData = (url) => {
         var xmlhttp = new XMLHttpRequest();
         var response = new Promise(resolve=>{
