@@ -26,7 +26,9 @@ func StartServer(filesInfo commits.FileInfos) {
 	model := pageModel{Title: "ChangeInspector", FilesInfo: string(data)}
 
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/", indexHandler(model))
+	SortHandler{filesInfo: filesInfo}.register(mux)
 
 	staticFileServer := http.FileServer(http.Dir("web/assets"))
 	mux.Handle("/assets/", http.StripPrefix("/assets/", staticFileServer))
