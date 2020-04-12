@@ -5,19 +5,19 @@ import (
 	"sort"
 )
 
-func toSortResult(items []OrderableFileInfo, getValue func(fileInfo commits.FileInfo) int64) []SortResult {
-	result := make([]SortResult, 0)
+/*GoogleChartBarResult ...*/
+type GoogleChartBarResult [][]interface{}
+
+func toSortResult(items []OrderableFileInfo, getValue func(fileInfo commits.FileInfo) int64) GoogleChartBarResult {
+	result := make(GoogleChartBarResult, 0)
 	for _, item := range items {
-		result = append(result, SortResult{
-			FileName: item.FileName,
-			Value:    getValue(item.Info),
-		})
+		result = append(result, []interface{}{item.FileName, getValue(item.Info)})
 	}
 	return result
 }
 
 /*Sort ...*/
-func Sort(src []OrderableFileInfo, sortCriteria sortCriteria) []SortResult {
+func Sort(src []OrderableFileInfo, sortCriteria sortCriteria) GoogleChartBarResult {
 	criteria := sortCriteria.getCriteria()
 	copyArray := make([]OrderableFileInfo, len(src))
 	copy(copyArray, src)

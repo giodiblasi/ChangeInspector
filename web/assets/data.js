@@ -26,37 +26,35 @@ const showReport = (data) => {
 
  
     //next: create sort data API 
-
-    const drawChanges = async () => {
-        return new Promise(resolve => {
-            const changesData = dataArray
-                .sort((a, b) => b.Info.TotalChanges - a.Info.TotalChanges)
-                .slice(10)
-                .map(d => [d.FileName, d.Info.TotalChanges]);
-            google.charts.setOnLoadCallback(() => draw(
-                changesData,
-                "File Changes",
-                ["File", "Changes"],
-                document.getElementById('chart_div_changes')));
-            resolve();
+    const getData = (url) => {
+        var xmlhttp = new XMLHttpRequest();
+        var response = new Promise(resolve=>{
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(JSON.parse(this.responseText));
+                }
+            }
         });
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+        return response;
+    }
+    const drawChanges = async () => {
+        const data = (await getData('/sort/changes')).slice(10);
+        google.charts.setOnLoadCallback(() => draw(
+            data,
+            "File Changes",
+            ["File", "Changes"],
+            document.getElementById('chart_div_changes')));
     }
 
     const drawCommits = async () => {
-        return new Promise(resolve => {
-            const commitsData = dataArray
-                .sort((a, b) => b.Info.Commits.length - a.Info.Commits.length)
-                .slice(10)
-                .map(d => [d.FileName, d.Info.Commits.length]);
-
-
-            google.charts.setOnLoadCallback(() => draw(
-                commitsData,
-                "File Commits",
-                ["File", "Commits"],
-                document.getElementById('chart_div_commits')));
-            resolve();
-        });
+        const data  = (await getData('/sort/commits')).slice(10);
+        google.charts.setOnLoadCallback(() => draw(
+            data,
+            "File Commits",
+            ["File", "Commits"],
+            document.getElementById('chart_div_commits')));
     }
 
     drawChanges();
