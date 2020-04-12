@@ -2,16 +2,16 @@ package web
 
 import (
 	"ChangeInspector/commits"
-	"encoding/json"
 	"html/template"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 var tpl = template.Must(template.ParseFiles("web/index.html"))
 
 type pageModel struct {
-	Title     string
-	FilesInfo string
+	Title string
 }
 
 func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) {
@@ -22,16 +22,17 @@ func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) 
 
 /*StartServer ...*/
 func StartServer(filesInfo commits.FileInfos) {
-	data, _ := json.Marshal(filesInfo)
-	model := pageModel{Title: "ChangeInspector", FilesInfo: string(data)}
+	model := pageModel{Title: "ChangeInspector"}
 
-	mux := http.NewServeMux()
+	router := mux.NewRouter()
 
-	mux.HandleFunc("/", indexHandler(model))
-	SortHandler{filesInfo: filesInfo}.register(mux)
+	router.HandleFunc("/", indexHandler(model))
 
-	staticFileServer := http.FileServer(http.Dir("web/assets"))
-	mux.Handle("/assets/", http.StripPrefix("/assets/", staticFileServer))
+	SortHandler{filesInfo: &filesInfo}.register(router)
+	DetailHandler{filesInfo: &filesInfo}.register(router)
 
-	http.ListenAndServe(":3000", mux)
+	staticFileServer := http.FileServer(http.Dir("web/assets/"))
+	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))
+
+	http.ListenAndServe(":3000", router)
 }

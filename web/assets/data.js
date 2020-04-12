@@ -1,9 +1,4 @@
-const showReport = (data) => {
-
-    const dataArray = Object.keys(data).map(k => ({
-        FileName: k,
-        Info: data[k]
-    }))
+const showReport = () => {
 
     google.charts.load('current', { 'packages': ['bar'] });
 
