@@ -19,9 +19,14 @@ const showReport = () => {
         google.visualization.events.addListener(chart, 'select', selectHandler);
         function selectHandler(e) {
             const selectedItem = chart.getSelection()[0];
-            const selectedFileName = gdata.getValue(selectedItem.row, 0);
-            var event = new CustomEvent('file_selected', {detail: selectedFileName});
-            element.dispatchEvent(event);
+            if(selectedItem){
+                const selectedFileName = gdata.getValue(selectedItem.row, 0);
+                var event = new CustomEvent('file_selected', {detail: selectedFileName});
+                element.dispatchEvent(event);
+            }
+            else{
+                element.dispatchEvent(new Event('clear_selection'));
+            }
         }
 
         chart.draw(gdata, google.charts.Bar.convertOptions(options));
