@@ -22,7 +22,7 @@ func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) 
 
 /*StartServer ...*/
 func StartServer(gitLog gitlog.GitLog) {
-	model := pageModel{Title: "ChangeInspector"}
+	model := pageModel{Title: "Change Inspector"}
 
 	router := mux.NewRouter()
 
