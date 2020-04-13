@@ -1,8 +1,8 @@
 package web
 
 import (
-	"ChangeInspector/commits"
-	"ChangeInspector/sortedcommits"
+	"ChangeInspector/gitlog"
+	"ChangeInspector/sorter"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -13,10 +13,10 @@ import (
 
 /*SortHandler ...*/
 type SortHandler struct {
-	filesInfo *commits.FileInfos
+	gitLog gitlog.GitLog
 }
 
-func getResult(query url.Values, result sortedcommits.GoogleChartBarResult) sortedcommits.GoogleChartBarResult {
+func getResult(query url.Values, result sorter.GoogleChartBarResult) sorter.GoogleChartBarResult {
 	take, ok := query["take"]
 	if ok {
 		i, _ := strconv.Atoi(take[0])
@@ -26,22 +26,15 @@ func getResult(query url.Values, result sortedcommits.GoogleChartBarResult) sort
 }
 
 func (handler SortHandler) register(router *mux.Router) {
-	arrayInfo := make([]sortedcommits.OrderableFileInfo, 0)
-	for fileName, fileInfo := range *handler.filesInfo {
-		arrayInfo = append(arrayInfo, sortedcommits.OrderableFileInfo{
-			FileName: fileName,
-			Info:     fileInfo,
-		})
-	}
-
+	logSorter := sorter.CreateSorter(handler.gitLog)
 	router.HandleFunc("/sort/commits", func(w http.ResponseWriter, r *http.Request) {
-		result := sortedcommits.Sort(arrayInfo, sortedcommits.ByCommits{})
+		result := logSorter.Sort(sorter.ByCommits{})
 		query := r.URL.Query()
 		json.NewEncoder(w).Encode(getResult(query, result))
 	})
 
 	router.HandleFunc("/sort/changes", func(w http.ResponseWriter, r *http.Request) {
-		result := sortedcommits.Sort(arrayInfo, sortedcommits.ByChanges{})
+		result := logSorter.Sort(sorter.ByChanges{})
 		query := r.URL.Query()
 		json.NewEncoder(w).Encode(getResult(query, result))
 	})

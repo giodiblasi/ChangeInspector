@@ -1,4 +1,4 @@
-package commits
+package gitlog
 
 import (
 	"strconv"
@@ -16,17 +16,21 @@ func filterEmpty(source []string) []string {
 }
 
 /*Parse ...*/
-func Parse(input string) FileInfos {
-	fileInfoMap := make(FileInfos)
+func Parse(input string) GitLog {
+	fileInfoMap := make(FilesInfo)
+	commitsInfoMap := make(CommitsInfo)
 	commits := strings.Split(input, "---------------------------")[1:]
 	for _, commitStr := range commits {
 		bodyStr := strings.Split(commitStr, "*******")
 
 		commit := CommitInfo{
-			bodyStr[0],
+			strings.ReplaceAll(bodyStr[0], "\n", ""),
 			strings.ReplaceAll(bodyStr[1], "\n", ""),
 			bodyStr[2]}
-
+		_, hasCommit := commitsInfoMap[commit.Hash]
+		if !hasCommit {
+			commitsInfoMap[commit.Hash] = commit
+		}
 		changesStr := bodyStr[3]
 		filesStats := strings.Split(changesStr, "\n")
 		for _, fileStat := range filterEmpty(filesStats) {
@@ -41,12 +45,15 @@ func Parse(input string) FileInfos {
 			}
 
 			fileInfoMap[fileName] = FileInfo{
-				Commits:        append(fileInfo.Commits, commit),
+				Commits:        append(fileInfo.Commits, commit.Hash),
 				TotalAdds:      fileInfo.TotalAdds + fileAdds,
 				TotalRemotions: fileInfo.TotalRemotions + fileRemotions,
 				TotalChanges:   fileInfo.TotalChanges + fileAdds + fileRemotions,
 			}
 		}
 	}
-	return fileInfoMap
+	return GitLog{
+		Commits:   commitsInfoMap,
+		FilesInfo: fileInfoMap,
+	}
 }
