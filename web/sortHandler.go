@@ -5,6 +5,8 @@ import (
 	"ChangeInspector/sortedcommits"
 	"encoding/json"
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -12,6 +14,15 @@ import (
 /*SortHandler ...*/
 type SortHandler struct {
 	filesInfo *commits.FileInfos
+}
+
+func getResult(query url.Values, result sortedcommits.GoogleChartBarResult) sortedcommits.GoogleChartBarResult {
+	take, ok := query["take"]
+	if ok {
+		i, _ := strconv.Atoi(take[0])
+		return result[:i]
+	}
+	return result
 }
 
 func (handler SortHandler) register(router *mux.Router) {
@@ -25,12 +36,14 @@ func (handler SortHandler) register(router *mux.Router) {
 
 	router.HandleFunc("/sort/commits", func(w http.ResponseWriter, r *http.Request) {
 		result := sortedcommits.Sort(arrayInfo, sortedcommits.ByCommits{})
-		json.NewEncoder(w).Encode(result)
+		query := r.URL.Query()
+		json.NewEncoder(w).Encode(getResult(query, result))
 	})
 
 	router.HandleFunc("/sort/changes", func(w http.ResponseWriter, r *http.Request) {
 		result := sortedcommits.Sort(arrayInfo, sortedcommits.ByChanges{})
-		json.NewEncoder(w).Encode(result)
+		query := r.URL.Query()
+		json.NewEncoder(w).Encode(getResult(query, result))
 	})
 
 }
