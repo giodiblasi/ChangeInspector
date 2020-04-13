@@ -16,7 +16,7 @@ const initDetail = () => {
                 }
             }
         });
-        xmlhttp.open("GET", `/detail/${fileName.replace(/\//g, '$')}`, true);
+        xmlhttp.open("GET", `/files/${fileName.replace(/\//g, '$')}/detail`, true);
         xmlhttp.send(); 
         return response;
     }

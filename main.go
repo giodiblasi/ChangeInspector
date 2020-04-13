@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ChangeInspector/commits"
+	"ChangeInspector/gitlog"
 	"ChangeInspector/web"
 	"os"
 	"os/exec"
@@ -15,9 +15,9 @@ func getCommitsResult(path string) string {
 
 func main() {
 	var gitFolder string = os.Args[1]
-	var result string = getCommitsResult(gitFolder)
-	var filesInfo commits.FileInfos = commits.Parse(result)
-	web.StartServer(filesInfo)
+	result := getCommitsResult(gitFolder)
+	gitLog := gitlog.Parse(result)
+	web.StartServer(gitLog)
 
 	// Console
 	// for _, fileInfo := range sortedcommits.GetSorted(filesInfo, sortedcommits.ByCommits{}) {

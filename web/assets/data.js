@@ -1,7 +1,7 @@
 const showReport = () => {
 
     google.charts.load('current', { 'packages': ['bar'] });
-
+    const MAX_ITEMS = 10;
     function draw(dataArray, title, dataLabels, element) {
         var gdata = google.visualization.arrayToDataTable([
             dataLabels,
@@ -47,7 +47,7 @@ const showReport = () => {
         return response;
     }
     const drawChanges = async () => {
-        const data = (await getData('/sort/changes')).slice(10);
+        const data = (await getData(`/sort/changes?take=${MAX_ITEMS}`));
         google.charts.setOnLoadCallback(() => draw(
             data,
             "File Changes",
@@ -56,7 +56,7 @@ const showReport = () => {
     }
 
     const drawCommits = async () => {
-        const data  = (await getData('/sort/commits')).slice(10);
+        const data  = (await getData(`/sort/commits?take=${MAX_ITEMS}`));
         google.charts.setOnLoadCallback(() => draw(
             data,
             "File Commits",

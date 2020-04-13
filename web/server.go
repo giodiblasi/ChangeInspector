@@ -1,7 +1,7 @@
 package web
 
 import (
-	"ChangeInspector/commits"
+	"ChangeInspector/gitlog"
 	"html/template"
 	"net/http"
 
@@ -21,15 +21,16 @@ func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) 
 }
 
 /*StartServer ...*/
-func StartServer(filesInfo commits.FileInfos) {
-	model := pageModel{Title: "ChangeInspector"}
+func StartServer(gitLog gitlog.GitLog) {
+	model := pageModel{Title: "Change Inspector"}
 
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", indexHandler(model))
 
-	SortHandler{filesInfo: &filesInfo}.register(router)
-	DetailHandler{filesInfo: &filesInfo}.register(router)
+	SortHandler{gitLog: gitLog}.register(router)
+	FilesHandler{gitLog: gitLog}.register(router)
+	CommitsHandler{gitLog: gitLog}.register(router)
 
 	staticFileServer := http.FileServer(http.Dir("web/assets/"))
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))

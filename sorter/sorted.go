@@ -1,14 +1,14 @@
-package sortedcommits
+package sorter
 
 import (
-	"ChangeInspector/commits"
+	"ChangeInspector/gitlog"
 	"sort"
 )
 
 /*GoogleChartBarResult ...*/
 type GoogleChartBarResult [][]interface{}
 
-func toSortResult(items []OrderableFileInfo, getValue func(fileInfo commits.FileInfo) int64) GoogleChartBarResult {
+func toSortResult(items []LogItem, getValue func(fileInfo gitlog.FileInfo) int64) GoogleChartBarResult {
 	result := make(GoogleChartBarResult, 0)
 	for _, item := range items {
 		result = append(result, []interface{}{item.FileName, getValue(item.Info)})
@@ -17,10 +17,10 @@ func toSortResult(items []OrderableFileInfo, getValue func(fileInfo commits.File
 }
 
 /*Sort ...*/
-func Sort(src []OrderableFileInfo, sortCriteria sortCriteria) GoogleChartBarResult {
+func (logSorter LogSorter) Sort(sortCriteria sortCriteria) GoogleChartBarResult {
 	criteria := sortCriteria.getCriteria()
-	copyArray := make([]OrderableFileInfo, len(src))
-	copy(copyArray, src)
+	copyArray := make([]LogItem, len(logSorter.logs))
+	copy(copyArray, logSorter.logs)
 	sort.Slice(copyArray, criteria.Compare(copyArray))
 	return toSortResult(copyArray, criteria.SelectValue)
 }
