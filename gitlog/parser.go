@@ -45,7 +45,7 @@ func Parse(input string) GitLog {
 			}
 
 			fileInfoMap[fileName] = FileInfo{
-				Commits:        append(fileInfo.Commits, commit.Hash),
+				Commits:        append(fileInfo.Commits, &commit),
 				TotalAdds:      fileInfo.TotalAdds + fileAdds,
 				TotalRemotions: fileInfo.TotalRemotions + fileRemotions,
 				TotalChanges:   fileInfo.TotalChanges + fileAdds + fileRemotions,

@@ -9,7 +9,7 @@ type CommitInfo struct {
 
 /*FileInfo ...*/
 type FileInfo struct {
-	Commits        []string
+	Commits        []*CommitInfo
 	TotalAdds      int64
 	TotalRemotions int64
 	TotalChanges   int64
@@ -17,7 +17,7 @@ type FileInfo struct {
 
 func emptyFileInfo() *FileInfo {
 	fileInfo := FileInfo{
-		Commits:        make([]string, 0),
+		Commits:        make([]*CommitInfo, 0),
 		TotalAdds:      0,
 		TotalRemotions: 0,
 		TotalChanges:   0,
@@ -47,9 +47,8 @@ func (gitLog GitLog) GetFileInfo(fileName string) FileInfo {
 func (gitLog GitLog) GetFileCommits(fileName string) []CommitInfo {
 	info := gitLog.FilesInfo[fileName]
 	commits := make([]CommitInfo, 0)
-	for _, hash := range info.Commits {
-		commit := gitLog.Commits[hash]
-		commits = append(commits, commit)
+	for _, commit := range info.Commits {
+		commits = append(commits, *commit)
 	}
 	return commits
 }
