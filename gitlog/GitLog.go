@@ -33,6 +33,7 @@ type CommitsInfo map[string]CommitInfo
 
 /*GitLog ...*/
 type GitLog struct {
+	Path      string
 	FilesInfo FilesInfo
 	Commits   CommitsInfo
 }

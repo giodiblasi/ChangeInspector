@@ -30,14 +30,15 @@ func getResult(query url.Values, result sorter.GoogleChartBarResult) sorter.Goog
 }
 
 func (handler SortHandler) register(router *mux.Router) {
-	logSorter := sorter.CreateSorter(handler.gitLog)
 	router.HandleFunc("/sort/commits", func(w http.ResponseWriter, r *http.Request) {
+		logSorter := sorter.CreateSorter(handler.gitLog)
 		result := logSorter.Sort(sorter.ByCommits{})
 		query := r.URL.Query()
 		json.NewEncoder(w).Encode(getResult(query, result))
 	})
 
 	router.HandleFunc("/sort/changes", func(w http.ResponseWriter, r *http.Request) {
+		logSorter := sorter.CreateSorter(handler.gitLog)
 		result := logSorter.Sort(sorter.ByChanges{})
 		query := r.URL.Query()
 		json.NewEncoder(w).Encode(getResult(query, result))

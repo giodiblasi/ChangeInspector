@@ -31,6 +31,7 @@ func StartServer(gitLog gitlog.GitLog) {
 	SortHandler{gitLog: &gitLog}.register(router)
 	FilesHandler{gitLog: &gitLog}.register(router)
 	CommitsHandler{gitLog: &gitLog}.register(router)
+	LogHandler{gitLog: &gitLog}.register(router)
 
 	staticFileServer := http.FileServer(http.Dir("web/assets/"))
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))

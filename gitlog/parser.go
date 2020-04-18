@@ -1,9 +1,26 @@
 package gitlog
 
 import (
+	"bufio"
+	"os/exec"
 	"strconv"
 	"strings"
 )
+
+func execGitLog(path string, before, after string, consumer func(string)) {
+	cmd := exec.Command("bash", "stat", path, after, before)
+	stdout, _ := cmd.StdoutPipe()
+	r := bufio.NewReader(stdout)
+	cmd.Start()
+	for {
+		line, _, err := r.ReadLine()
+		if err != nil {
+			break
+		}
+		consumer(string(line))
+	}
+	cmd.Wait()
+}
 
 func filterEmpty(source []string) []string {
 	output := make([]string, 0)
@@ -48,12 +65,12 @@ func (gitLog *GitLog) parseCommitString(commitStr string) {
 	}
 }
 
-/*ParseStream ...*/
-func (gitLog *GitLog) ParseStream() func(string) {
+/*Update ...*/
+func (gitLog *GitLog) Update(before string, after string) {
 	commitStr := ""
 	gitLog.Commits = make(CommitsInfo)
 	gitLog.FilesInfo = make(FilesInfo)
-	return func(line string) {
+	execGitLog(gitLog.Path, before, after, func(line string) {
 		if line == "---------------------------" {
 			if commitStr != "" {
 				gitLog.parseCommitString(commitStr)
@@ -62,5 +79,5 @@ func (gitLog *GitLog) ParseStream() func(string) {
 		} else {
 			commitStr += "\n" + line
 		}
-	}
+	})
 }
