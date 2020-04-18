@@ -10,7 +10,7 @@ import (
 
 /*CommitsHandler ...*/
 type CommitsHandler struct {
-	gitLog gitlog.GitLog
+	gitLog *gitlog.GitLog
 }
 
 func (handler CommitsHandler) register(router *mux.Router) {

@@ -13,7 +13,7 @@ import (
 
 /*SortHandler ...*/
 type SortHandler struct {
-	gitLog gitlog.GitLog
+	gitLog *gitlog.GitLog
 }
 
 func getResult(query url.Values, result sorter.GoogleChartBarResult) sorter.GoogleChartBarResult {

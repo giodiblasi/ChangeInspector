@@ -15,9 +15,31 @@
     <h1>{{.Title}}</h1>
     <div id="container">
         <div class="row">
+
+            <div class="input-group mb-3 col">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">From Date</span>
+                </div>
+                <input type="date" class="form-control" aria-label="Username" aria-describedby="basic-addon1"
+                    id="start">
+            </div>
+            <div class="input-group mb-3 col">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon2">To Date</span>
+                </div>
+                <input type="date" class="form-control" aria-label="Username" aria-describedby="basic-addon2" id="end">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Update!</button>
+            </div>
+
+        </div>
+        <div class="row">
+
+
             <div class="col">
                 <div class="bar-chart" id="chart_div_changes"></div>
-                <div class="bar-chart"  id="chart_div_commits"></div>
+                <div class="bar-chart" id="chart_div_commits"></div>
             </div>
             <div class="col">
                 <div class="card" id="detail_card">

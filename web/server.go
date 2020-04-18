@@ -28,9 +28,9 @@ func StartServer(gitLog gitlog.GitLog) {
 
 	router.HandleFunc("/", indexHandler(model))
 
-	SortHandler{gitLog: gitLog}.register(router)
-	FilesHandler{gitLog: gitLog}.register(router)
-	CommitsHandler{gitLog: gitLog}.register(router)
+	SortHandler{gitLog: &gitLog}.register(router)
+	FilesHandler{gitLog: &gitLog}.register(router)
+	CommitsHandler{gitLog: &gitLog}.register(router)
 
 	staticFileServer := http.FileServer(http.Dir("web/assets/"))
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))

@@ -14,7 +14,7 @@ type LogSorter struct {
 }
 
 /*CreateSorter ...*/
-func CreateSorter(gitLog gitlog.GitLog) LogSorter {
+func CreateSorter(gitLog *gitlog.GitLog) LogSorter {
 	arrayInfo := make([]LogItem, 0)
 	for fileName, fileInfo := range gitLog.FilesInfo {
 		arrayInfo = append(arrayInfo, LogItem{

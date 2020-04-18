@@ -11,7 +11,7 @@ import (
 
 /*FilesHandler ...*/
 type FilesHandler struct {
-	gitLog gitlog.GitLog
+	gitLog *gitlog.GitLog
 }
 
 func (handler FilesHandler) register(router *mux.Router) {
