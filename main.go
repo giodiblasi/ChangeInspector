@@ -3,20 +3,31 @@ package main
 import (
 	"ChangeInspector/gitlog"
 	"ChangeInspector/web"
+	"bufio"
 	"os"
 	"os/exec"
 )
 
-func getCommitsResult(path string) string {
+func execGitLog(path string, consumer func(string)) {
 	cmd := exec.Command("bash", "stat", path)
-	out, _ := cmd.CombinedOutput()
-	return string(out)
+	stdout, _ := cmd.StdoutPipe()
+	r := bufio.NewReader(stdout)
+	cmd.Start()
+	for {
+		line, _, err := r.ReadLine()
+		if err != nil {
+			break
+		}
+		consumer(string(line))
+	}
+	cmd.Wait()
 }
 
 func main() {
+
 	var gitFolder string = os.Args[1]
-	result := getCommitsResult(gitFolder)
-	gitLog := gitlog.Parse(result)
+	gitLog := gitlog.GitLog{}
+	execGitLog(gitFolder, gitLog.ParseStream())
 	web.StartServer(gitLog)
 
 	// Console
