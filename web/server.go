@@ -35,5 +35,5 @@ func StartServer(gitLog gitlog.GitLog) {
 	staticFileServer := http.FileServer(http.Dir("web/assets/"))
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))
 
-	http.ListenAndServe(":3000", router)
+	http.ListenAndServe(":3001", router)
 }

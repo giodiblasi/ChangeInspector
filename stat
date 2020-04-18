@@ -1,4 +1,6 @@
 #!/bin/sh
 REPO_FOLDER=$1
+AFTER=$2
+BEFORE=$3
 cd $REPO_FOLDER
-git log --pretty=format:'---------------------------%n%h%n*******%n%an%n*******%n%B*******%n' --numstat
+git log --pretty=format:'---------------------------%n%h%n*******%n%an%n*******%n%B*******%n' --numstat --after=$AFTER --before=$BEFORE

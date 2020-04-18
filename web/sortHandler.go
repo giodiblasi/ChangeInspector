@@ -17,10 +17,14 @@ type SortHandler struct {
 }
 
 func getResult(query url.Values, result sorter.GoogleChartBarResult) sorter.GoogleChartBarResult {
-	take, ok := query["take"]
+	takeParam, ok := query["take"]
 	if ok {
-		i, _ := strconv.Atoi(take[0])
-		return result[:i]
+		take, _ := strconv.Atoi(takeParam[0])
+		length := len(result)
+		if length < take {
+			take = length
+		}
+		return result[:take]
 	}
 	return result
 }
