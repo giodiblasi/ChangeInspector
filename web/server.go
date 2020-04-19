@@ -19,7 +19,7 @@ type pageModel struct {
 func indexHandler(logService *logservice.LogService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		model := pageModel{
-			Title:     "Change Inspector",
+			Title:     "Changes Inspector",
 			StartDate: logService.GitLog.After.Format("2006-01-02"),
 			EndDate:   logService.GitLog.Before.Format("2006-01-02"),
 		}
@@ -40,5 +40,5 @@ func StartServer(logService *logservice.LogService) {
 	staticFileServer := http.FileServer(http.Dir("web/assets/"))
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))
 
-	http.ListenAndServe(":3001", router)
+	http.ListenAndServe(":3000", router)
 }
