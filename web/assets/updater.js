@@ -7,8 +7,10 @@ const initUpdater = () => {
         var xmlhttp = new XMLHttpRequest();
         var response = new Promise((resolve, reject) => {
             xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    resolve();
+                if (this.readyState == 4) {
+                    this.status == 200
+                    ? resolve()
+                    : reject(this.responseText)
                 }
             }
         });
@@ -18,8 +20,11 @@ const initUpdater = () => {
     }
     document
         .getElementById("update-button")
-        .addEventListener('click', async ()=>{
-            await update(startDate.value, endDate.value);
-            dateSelector.dispatchEvent(new Event('data_updated'));
+        .addEventListener('click',  (e)=>{
+            
+            update(startDate.value, endDate.value)
+            .then(()=>dateSelector.dispatchEvent(new Event('data_updated')))
+            .catch(err=>console.log(err))
+            
         });
 }

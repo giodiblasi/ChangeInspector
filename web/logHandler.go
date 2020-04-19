@@ -25,8 +25,14 @@ func (handler LogHandler) register(router *mux.Router) {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, err.Error())
-		} else {
-			handler.logService.Update(before, after)
+			return
 		}
+		if before.Sub(after).Milliseconds() < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "end date have to be greater that start date")
+			return
+		}
+		handler.logService.Update(before, after)
+
 	}).Methods("PUT")
 }

@@ -13,42 +13,30 @@
 </head>
 
 <body>
-    <h1>{{.Title}}</h1>
-    <div id="container">
-        <div class="row" id="date-selector">
-
-            <div class="input-group mb-3 col">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">{{.Title}}</a>
+        <div class="form-inline" id="date-selector">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">From Date</span>
                 </div>
-                <input 
-                    type="date"
-                    class="form-control"
-                    aria-label="Username"
-                    aria-describedby="basic-addon1"
-                    value={{.StartDate}}
-                    id="start">
+                <input type="date" class="form-control" aria-label="Username" aria-describedby="basic-addon1"
+                    value={{.StartDate}} id="start">
             </div>
-            <div class="input-group mb-3 col">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon2">To Date</span>
                 </div>
-                <input
-                    type="date"
-                    class="form-control"
-                    aria-label="Username"
-                    aria-describedby="basic-addon2"
-                    value="{{.EndDate}}"
-                    id="end">
+                <input type="date" class="form-control" aria-label="Username" aria-describedby="basic-addon2"
+                    value="{{.EndDate}}" id="end">
             </div>
-            <div class="col">
-                <button type="submit" id="update-button" class="btn btn-primary">Update!</button>
-            </div>
+
+            <button type="submit" id="update-button" class="btn btn-primary">Update!</button>
 
         </div>
+    </nav>
+    <div id="container">
         <div class="row">
-
-
             <div class="col">
                 <div class="bar-chart" id="chart_div_changes"></div>
                 <div class="bar-chart" id="chart_div_commits"></div>
@@ -73,30 +61,37 @@
         </div>
     </div>
 </body>
-<script type="text/javascript">
-    showReport();
-    initUpdater();
-    const detail = initDetail();
-    [
-        document.getElementById('chart_div_commits'),
-        document.getElementById('chart_div_changes')
-    ].forEach(elem => {
-        elem.addEventListener('file_selected', function (e) {
-            detail.update(e.detail)
-        }, false);
-        elem.addEventListener('clear_selection', function (e) {
-            detail.clear();
-        }, false);
-    })
+<script type="text/javascript" async>
 
-    document
-        .getElementById('date-selector')
-        .addEventListener('data_updated', ()=>{
-            detail.clear();
-            showReport();
-        }, false)
+    showReport().then(report => {
+        report.update();
+        initUpdater();
+
+        const detail = initDetail();
+        [
+            document.getElementById('chart_div_commits'),
+            document.getElementById('chart_div_changes')
+        ].forEach(elem => {
+            elem.addEventListener('file_selected', function (e) {
+                detail.update(e.detail)
+            }, false);
+            elem.addEventListener('clear_selection', function (e) {
+                detail.clear();
+            }, false);
+        })
 
 
+
+
+        document
+            .getElementById('date-selector')
+            .addEventListener('data_updated', () => {
+                detail.clear();
+                report.update();
+                showReport();
+            }, false)
+
+    });
 
 </script>
 
