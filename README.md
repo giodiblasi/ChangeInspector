@@ -13,7 +13,8 @@ To launch web application type:
 and go to http://localhost:3000
 
 ## ToDo
-- [ x ] Add Date Range 
-- [  ] Start From Last Commit Date
-- [  ] Dockerization
+- [x] Add Date Range 
+- [ ] Start From Last Commit Date
+- [ ] File Filter (Think about yarn.lock :scream:)
+- [ ] Dockerization
 
