@@ -16,11 +16,11 @@ func toSortResult(items []LogItem, getValue func(fileInfo gitlog.FileInfo) int64
 	return result
 }
 
-/*Sort ...*/
-func (logSorter LogSorter) Sort(sortCriteria sortCriteria) GoogleChartBarResult {
+/*SortBy ...*/
+func (logs SortableLogs) SortBy(sortCriteria sortCriteria) GoogleChartBarResult {
 	criteria := sortCriteria.getCriteria()
-	copyArray := make([]LogItem, len(logSorter.logs))
-	copy(copyArray, logSorter.logs)
+	copyArray := make([]LogItem, len(logs.logs))
+	copy(copyArray, logs.logs)
 	sort.Slice(copyArray, criteria.Compare(copyArray))
 	return toSortResult(copyArray, criteria.SelectValue)
 }

@@ -1,5 +1,7 @@
 package gitlog
 
+import "time"
+
 /*CommitInfo ...*/
 type CommitInfo struct {
 	Hash    string
@@ -34,6 +36,8 @@ type CommitsInfo map[string]CommitInfo
 /*GitLog ...*/
 type GitLog struct {
 	Path      string
+	before    time.Time
+	after     time.Time
 	FilesInfo FilesInfo
 	Commits   CommitsInfo
 }

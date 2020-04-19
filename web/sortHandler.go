@@ -1,7 +1,7 @@
 package web
 
 import (
-	"ChangeInspector/gitlog"
+	"ChangeInspector/logservice"
 	"ChangeInspector/sorter"
 	"encoding/json"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 
 /*SortHandler ...*/
 type SortHandler struct {
-	gitLog *gitlog.GitLog
+	logService *logservice.LogService
 }
 
 func getResult(query url.Values, result sorter.GoogleChartBarResult) sorter.GoogleChartBarResult {
@@ -31,15 +31,13 @@ func getResult(query url.Values, result sorter.GoogleChartBarResult) sorter.Goog
 
 func (handler SortHandler) register(router *mux.Router) {
 	router.HandleFunc("/sort/commits", func(w http.ResponseWriter, r *http.Request) {
-		logSorter := sorter.CreateSorter(handler.gitLog)
-		result := logSorter.Sort(sorter.ByCommits{})
+		result := handler.logService.SortableLogs.SortBy(sorter.ByCommits{})
 		query := r.URL.Query()
 		json.NewEncoder(w).Encode(getResult(query, result))
 	})
 
 	router.HandleFunc("/sort/changes", func(w http.ResponseWriter, r *http.Request) {
-		logSorter := sorter.CreateSorter(handler.gitLog)
-		result := logSorter.Sort(sorter.ByChanges{})
+		result := handler.logService.SortableLogs.SortBy(sorter.ByChanges{})
 		query := r.URL.Query()
 		json.NewEncoder(w).Encode(getResult(query, result))
 	})

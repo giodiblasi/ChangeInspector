@@ -8,13 +8,13 @@ type LogItem struct {
 	Info     gitlog.FileInfo
 }
 
-/*LogSorter ...*/
-type LogSorter struct {
+/*SortableLogs ...*/
+type SortableLogs struct {
 	logs []LogItem
 }
 
-/*CreateSorter ...*/
-func CreateSorter(gitLog *gitlog.GitLog) LogSorter {
+/*NewSorter ...*/
+func NewSorter(gitLog *gitlog.GitLog) SortableLogs {
 	arrayInfo := make([]LogItem, 0)
 	for fileName, fileInfo := range gitLog.FilesInfo {
 		arrayInfo = append(arrayInfo, LogItem{
@@ -22,7 +22,7 @@ func CreateSorter(gitLog *gitlog.GitLog) LogSorter {
 			Info:     fileInfo,
 		})
 	}
-	return LogSorter{
+	return SortableLogs{
 		logs: arrayInfo,
 	}
 }

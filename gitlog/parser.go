@@ -2,19 +2,34 @@ package gitlog
 
 import (
 	"bufio"
+	"fmt"
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
 
-func execGitLog(path string, before, after string, consumer func(string)) {
-	cmd := exec.Command("bash", "stat", path, after, before)
+const commitSeparator = "---------------------------"
+const commitInfoSeparator = "*******"
+
+func execGitLog(gitLog *GitLog, consumer func(string)) {
+	layout := "01-02-2006"
+	fmt.Println(gitLog.after.Format(layout))
+	fmt.Println(gitLog.before.Format(layout))
+	cmd := exec.Command(
+		"bash",
+		"stat",
+		gitLog.Path,
+		gitLog.after.Format(layout),
+		gitLog.before.Format(layout))
+
 	stdout, _ := cmd.StdoutPipe()
 	r := bufio.NewReader(stdout)
 	cmd.Start()
 	for {
 		line, _, err := r.ReadLine()
 		if err != nil {
+			consumer(string(commitSeparator))
 			break
 		}
 		consumer(string(line))
@@ -33,7 +48,7 @@ func filterEmpty(source []string) []string {
 }
 
 func (gitLog *GitLog) parseCommitString(commitStr string) {
-	bodyStr := strings.Split(commitStr, "*******")
+	bodyStr := strings.Split(commitStr, commitInfoSeparator)
 
 	commit := CommitInfo{
 		strings.ReplaceAll(bodyStr[0], "\n", ""),
@@ -65,13 +80,18 @@ func (gitLog *GitLog) parseCommitString(commitStr string) {
 	}
 }
 
-/*Update ...*/
-func (gitLog *GitLog) Update(before string, after string) {
+/*NewGitLog ...*/
+func NewGitLog(path string, before time.Time, after time.Time) GitLog {
+	gitLog := GitLog{
+		Path:   path,
+		before: before,
+		after:  after,
+	}
 	commitStr := ""
 	gitLog.Commits = make(CommitsInfo)
 	gitLog.FilesInfo = make(FilesInfo)
-	execGitLog(gitLog.Path, before, after, func(line string) {
-		if line == "---------------------------" {
+	execGitLog(&gitLog, func(line string) {
+		if line == commitSeparator {
 			if commitStr != "" {
 				gitLog.parseCommitString(commitStr)
 				commitStr = ""
@@ -80,4 +100,5 @@ func (gitLog *GitLog) Update(before string, after string) {
 			commitStr += "\n" + line
 		}
 	})
+	return gitLog
 }

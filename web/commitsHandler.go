@@ -1,7 +1,7 @@
 package web
 
 import (
-	"ChangeInspector/gitlog"
+	"ChangeInspector/logservice"
 	"encoding/json"
 	"net/http"
 
@@ -10,14 +10,14 @@ import (
 
 /*CommitsHandler ...*/
 type CommitsHandler struct {
-	gitLog *gitlog.GitLog
+	logService *logservice.LogService
 }
 
 func (handler CommitsHandler) register(router *mux.Router) {
 	router.HandleFunc("/commits/{hash}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		hash := vars["hash"]
-		commit := handler.gitLog.Commits[hash]
+		commit := handler.logService.GitLog.Commits[hash]
 		json.NewEncoder(w).Encode(commit)
 	})
 }

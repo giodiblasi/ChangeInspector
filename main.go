@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ChangeInspector/gitlog"
+	"ChangeInspector/logservice"
 	"ChangeInspector/web"
 	"os"
 	"time"
@@ -10,12 +10,9 @@ import (
 func main() {
 	before := time.Now()
 	after := before.AddDate(0, 0, -7)
-	layout := "Jan-02-06"
-
 	var gitFolder string = os.Args[1]
-	gitLog := gitlog.GitLog{Path: gitFolder}
-	gitLog.Update(before.Format(layout), after.Format(layout))
-	web.StartServer(gitLog)
+	logService := logservice.NewLogService(gitFolder, before, after)
+	web.StartServer(&logService)
 
 	// Console
 	// for _, fileInfo := range sortedcommits.GetSorted(filesInfo, sortedcommits.ByCommits{}) {
