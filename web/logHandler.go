@@ -28,5 +28,5 @@ func (handler LogHandler) register(router *mux.Router) {
 		} else {
 			handler.logService.Update(before, after)
 		}
-	})
+	}).Methods("PUT")
 }

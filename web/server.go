@@ -16,23 +16,22 @@ type pageModel struct {
 	EndDate   string
 }
 
-func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) {
+func indexHandler(logService *logservice.LogService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		model := pageModel{
+			Title:     "Change Inspector",
+			StartDate: logService.GitLog.After.Format("2006-01-02"),
+			EndDate:   logService.GitLog.Before.Format("2006-01-02"),
+		}
 		tpl.Execute(w, model)
 	}
 }
 
 /*StartServer ...*/
 func StartServer(logService *logservice.LogService) {
-	model := pageModel{
-		Title:     "Change Inspector",
-		StartDate: logService.GitLog.After.Format("2006-01-02"),
-		EndDate:   logService.GitLog.Before.Format("2006-01-02"),
-	}
-
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", indexHandler(model))
+	router.HandleFunc("/", indexHandler(logService))
 	SortHandler{logService}.register(router)
 	FilesHandler{logService}.register(router)
 	CommitsHandler{logService}.register(router)
