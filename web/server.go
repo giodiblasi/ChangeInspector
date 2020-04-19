@@ -1,7 +1,7 @@
 package web
 
 import (
-	"ChangeInspector/gitlog"
+	"ChangeInspector/logservice"
 	"html/template"
 	"net/http"
 
@@ -11,26 +11,31 @@ import (
 var tpl = template.Must(template.ParseFiles("web/index.html"))
 
 type pageModel struct {
-	Title string
+	Title     string
+	StartDate string
+	EndDate   string
 }
 
-func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) {
+func indexHandler(logService *logservice.LogService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		model := pageModel{
+			Title:     "Changes Inspector",
+			StartDate: logService.GitLog.After.Format("2006-01-02"),
+			EndDate:   logService.GitLog.Before.Format("2006-01-02"),
+		}
 		tpl.Execute(w, model)
 	}
 }
 
 /*StartServer ...*/
-func StartServer(gitLog gitlog.GitLog) {
-	model := pageModel{Title: "Change Inspector"}
-
+func StartServer(logService *logservice.LogService) {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", indexHandler(model))
-
-	SortHandler{gitLog: gitLog}.register(router)
-	FilesHandler{gitLog: gitLog}.register(router)
-	CommitsHandler{gitLog: gitLog}.register(router)
+	router.HandleFunc("/", indexHandler(logService))
+	SortHandler{logService}.register(router)
+	FilesHandler{logService}.register(router)
+	CommitsHandler{logService}.register(router)
+	LogHandler{logService}.register(router)
 
 	staticFileServer := http.FileServer(http.Dir("web/assets/"))
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))

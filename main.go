@@ -1,23 +1,18 @@
 package main
 
 import (
-	"ChangeInspector/gitlog"
+	"ChangeInspector/logservice"
 	"ChangeInspector/web"
 	"os"
-	"os/exec"
+	"time"
 )
 
-func getCommitsResult(path string) string {
-	cmd := exec.Command("bash", "stat", path)
-	out, _ := cmd.CombinedOutput()
-	return string(out)
-}
-
 func main() {
+	before := time.Now()
+	after := before.AddDate(0, 0, -7)
 	var gitFolder string = os.Args[1]
-	result := getCommitsResult(gitFolder)
-	gitLog := gitlog.Parse(result)
-	web.StartServer(gitLog)
+	logService := logservice.NewLogService(gitFolder, before, after)
+	web.StartServer(&logService)
 
 	// Console
 	// for _, fileInfo := range sortedcommits.GetSorted(filesInfo, sortedcommits.ByCommits{}) {

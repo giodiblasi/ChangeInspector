@@ -1,9 +1,38 @@
 package gitlog
 
 import (
+	"bufio"
+	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
+
+const commitSeparator = "---------------------------"
+const commitInfoSeparator = "*******"
+
+func execGitLog(gitLog *GitLog, consumer func(string)) {
+	layout := "2006-01-02"
+	cmd := exec.Command(
+		"bash",
+		"stat",
+		gitLog.Path,
+		gitLog.After.Format(layout),
+		gitLog.Before.Format(layout))
+
+	stdout, _ := cmd.StdoutPipe()
+	r := bufio.NewReader(stdout)
+	cmd.Start()
+	for {
+		line, _, err := r.ReadLine()
+		if err != nil {
+			consumer(string(commitSeparator))
+			break
+		}
+		consumer(string(line))
+	}
+	cmd.Wait()
+}
 
 func filterEmpty(source []string) []string {
 	output := make([]string, 0)
@@ -15,45 +44,58 @@ func filterEmpty(source []string) []string {
 	return output
 }
 
-/*Parse ...*/
-func Parse(input string) GitLog {
-	fileInfoMap := make(FilesInfo)
-	commitsInfoMap := make(CommitsInfo)
-	commits := strings.Split(input, "---------------------------")[1:]
-	for _, commitStr := range commits {
-		bodyStr := strings.Split(commitStr, "*******")
+func (gitLog *GitLog) parseCommitString(commitStr string) {
+	bodyStr := strings.Split(commitStr, commitInfoSeparator)
 
-		commit := CommitInfo{
-			strings.ReplaceAll(bodyStr[0], "\n", ""),
-			strings.ReplaceAll(bodyStr[1], "\n", ""),
-			bodyStr[2]}
-		_, hasCommit := commitsInfoMap[commit.Hash]
-		if !hasCommit {
-			commitsInfoMap[commit.Hash] = commit
+	commit := CommitInfo{
+		strings.ReplaceAll(bodyStr[0], "\n", ""),
+		strings.ReplaceAll(bodyStr[1], "\n", ""),
+		strings.Trim(bodyStr[2], "\n")}
+	_, hasCommit := gitLog.Commits[commit.Hash]
+	if !hasCommit {
+		gitLog.Commits[commit.Hash] = commit
+	}
+	changesStr := bodyStr[3]
+	filesStats := strings.Split(changesStr, "\n")
+	for _, fileStat := range filterEmpty(filesStats) {
+		fileChanges := strings.Split(fileStat, "\t")
+		fileName := fileChanges[2]
+		fileAdds, _ := strconv.ParseInt(fileChanges[0], 10, 64)
+		fileRemotions, _ := strconv.ParseInt(fileChanges[1], 10, 64)
+
+		fileInfo, ok := gitLog.FilesInfo[fileName]
+		if !ok {
+			fileInfo = *emptyFileInfo()
 		}
-		changesStr := bodyStr[3]
-		filesStats := strings.Split(changesStr, "\n")
-		for _, fileStat := range filterEmpty(filesStats) {
-			fileChanges := strings.Split(fileStat, "\t")
-			fileName := fileChanges[2]
-			fileAdds, _ := strconv.ParseInt(fileChanges[0], 10, 64)
-			fileRemotions, _ := strconv.ParseInt(fileChanges[1], 10, 64)
 
-			fileInfo, ok := fileInfoMap[fileName]
-			if !ok {
-				fileInfo = *emptyFileInfo()
-			}
-
-			fileInfoMap[fileName] = FileInfo{
-				Commits:        append(fileInfo.Commits, commit.Hash),
-				TotalAdds:      fileInfo.TotalAdds + fileAdds,
-				TotalRemotions: fileInfo.TotalRemotions + fileRemotions,
-				TotalChanges:   fileInfo.TotalChanges + fileAdds + fileRemotions,
-			}
+		gitLog.FilesInfo[fileName] = FileInfo{
+			Commits:        append(fileInfo.Commits, &commit),
+			TotalAdds:      fileInfo.TotalAdds + fileAdds,
+			TotalRemotions: fileInfo.TotalRemotions + fileRemotions,
+			TotalChanges:   fileInfo.TotalChanges + fileAdds + fileRemotions,
 		}
 	}
-	return GitLog{
-		Commits:   commitsInfoMap,
-		FilesInfo: fileInfoMap,
+}
+
+/*NewGitLog ...*/
+func NewGitLog(path string, before time.Time, after time.Time) GitLog {
+	gitLog := GitLog{
+		Path:   path,
+		Before: before,
+		After:  after,
 	}
+	commitStr := ""
+	gitLog.Commits = make(CommitsInfo)
+	gitLog.FilesInfo = make(FilesInfo)
+	execGitLog(&gitLog, func(line string) {
+		if line == commitSeparator {
+			if commitStr != "" {
+				gitLog.parseCommitString(commitStr)
+				commitStr = ""
+			}
+		} else {
+			commitStr += "\n" + line
+		}
+	})
+	return gitLog
 }
