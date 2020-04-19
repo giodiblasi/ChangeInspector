@@ -3,6 +3,7 @@
 <head>
     <script src="/assets/data.js"></script>
     <script src="/assets/detail.js"></script>
+    <script src="/assets/updater.js"></script>
     <link rel="stylesheet" type="text/css" href="/assets/main.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -14,23 +15,34 @@
 <body>
     <h1>{{.Title}}</h1>
     <div id="container">
-        <div class="row">
+        <div class="row" id="date-selector">
 
             <div class="input-group mb-3 col">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">From Date</span>
                 </div>
-                <input type="date" class="form-control" aria-label="Username" aria-describedby="basic-addon1"
+                <input 
+                    type="date"
+                    class="form-control"
+                    aria-label="Username"
+                    aria-describedby="basic-addon1"
+                    value={{.StartDate}}
                     id="start">
             </div>
             <div class="input-group mb-3 col">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon2">To Date</span>
                 </div>
-                <input type="date" class="form-control" aria-label="Username" aria-describedby="basic-addon2" id="end">
+                <input
+                    type="date"
+                    class="form-control"
+                    aria-label="Username"
+                    aria-describedby="basic-addon2"
+                    value="{{.EndDate}}"
+                    id="end">
             </div>
             <div class="col">
-                <button type="submit" class="btn btn-primary">Update!</button>
+                <button type="submit" id="update-button" class="btn btn-primary">Update!</button>
             </div>
 
         </div>
@@ -63,6 +75,7 @@
 </body>
 <script type="text/javascript">
     showReport();
+    initUpdater();
     const detail = initDetail();
     [
         document.getElementById('chart_div_commits'),
@@ -75,6 +88,13 @@
             detail.clear();
         }, false);
     })
+
+    document
+        .getElementById('date-selector')
+        .addEventListener('data_updated', ()=>{
+            detail.clear();
+            showReport();
+        }, false)
 
 
 

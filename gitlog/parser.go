@@ -2,7 +2,6 @@ package gitlog
 
 import (
 	"bufio"
-	"fmt"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -13,15 +12,13 @@ const commitSeparator = "---------------------------"
 const commitInfoSeparator = "*******"
 
 func execGitLog(gitLog *GitLog, consumer func(string)) {
-	layout := "01-02-2006"
-	fmt.Println(gitLog.after.Format(layout))
-	fmt.Println(gitLog.before.Format(layout))
+	layout := "2006-01-02"
 	cmd := exec.Command(
 		"bash",
 		"stat",
 		gitLog.Path,
-		gitLog.after.Format(layout),
-		gitLog.before.Format(layout))
+		gitLog.After.Format(layout),
+		gitLog.Before.Format(layout))
 
 	stdout, _ := cmd.StdoutPipe()
 	r := bufio.NewReader(stdout)
@@ -84,8 +81,8 @@ func (gitLog *GitLog) parseCommitString(commitStr string) {
 func NewGitLog(path string, before time.Time, after time.Time) GitLog {
 	gitLog := GitLog{
 		Path:   path,
-		before: before,
-		after:  after,
+		Before: before,
+		After:  after,
 	}
 	commitStr := ""
 	gitLog.Commits = make(CommitsInfo)

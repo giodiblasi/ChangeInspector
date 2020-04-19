@@ -11,7 +11,9 @@ import (
 var tpl = template.Must(template.ParseFiles("web/index.html"))
 
 type pageModel struct {
-	Title string
+	Title     string
+	StartDate string
+	EndDate   string
 }
 
 func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +24,11 @@ func indexHandler(model pageModel) func(w http.ResponseWriter, r *http.Request) 
 
 /*StartServer ...*/
 func StartServer(logService *logservice.LogService) {
-	model := pageModel{Title: "Change Inspector"}
+	model := pageModel{
+		Title:     "Change Inspector",
+		StartDate: logService.GitLog.After.Format("2006-01-02"),
+		EndDate:   logService.GitLog.Before.Format("2006-01-02"),
+	}
 
 	router := mux.NewRouter()
 

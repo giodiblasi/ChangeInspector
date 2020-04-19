@@ -14,20 +14,10 @@ type LogHandler struct {
 	logService *logservice.LogService
 }
 
-func parseDate(dateString string, onError func(error)) time.Time {
-	layout := "Jan-02-06"
-
-	date, err := time.Parse(layout, dateString)
-	if err != nil {
-		onError(err)
-		return time.Now()
-	}
-	return date
-}
 func (handler LogHandler) register(router *mux.Router) {
 	router.HandleFunc("/log", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
-		layout := "01-02-2006"
+		layout := "2006-01-02"
 		var err error
 		var after, before time.Time
 		before, err = time.Parse(layout, query["before"][0])

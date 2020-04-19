@@ -36,8 +36,8 @@ type CommitsInfo map[string]CommitInfo
 /*GitLog ...*/
 type GitLog struct {
 	Path      string
-	before    time.Time
-	after     time.Time
+	Before    time.Time
+	After     time.Time
 	FilesInfo FilesInfo
 	Commits   CommitsInfo
 }
