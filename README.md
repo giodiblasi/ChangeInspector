@@ -8,7 +8,7 @@
 ## Run
 To launch web application type:
 ```
-> make run path=<repo directory>
+> make run path=<repo directory> exclude="file.js;file.go"
 ```
 and go to http://localhost:3000
 
