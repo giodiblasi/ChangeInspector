@@ -13,8 +13,8 @@ type LogService struct {
 }
 
 /*NewLogService ...*/
-func NewLogService(path string, before time.Time, after time.Time) LogService {
-	newgitLog := gitlog.NewGitLog(path, before, after)
+func NewLogService(path string, before time.Time, after time.Time, filesToExclude []string) LogService {
+	newgitLog := gitlog.NewGitLog(path, before, after, filesToExclude)
 	newLogs := sorter.NewSorter(&newgitLog)
 	return LogService{
 		GitLog:       &newgitLog,
@@ -24,7 +24,7 @@ func NewLogService(path string, before time.Time, after time.Time) LogService {
 
 /*Update ...*/
 func (logService *LogService) Update(before time.Time, after time.Time) {
-	newLogService := NewLogService(logService.GitLog.Path, before, after)
+	newLogService := NewLogService(logService.GitLog.Path, before, after, logService.GitLog.Ignore)
 
 	logService.GitLog = newLogService.GitLog
 	logService.SortableLogs = newLogService.SortableLogs
