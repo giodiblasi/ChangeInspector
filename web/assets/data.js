@@ -1,5 +1,4 @@
-const showReport = async () => {
-
+const showReport = async (api) => {
     google.charts.load("current", { packages: ["corechart"] });
     const MAX_ITEMS = 10;
     function draw(title, dataLabels, element) {
@@ -38,36 +37,19 @@ const showReport = async () => {
             chart,
             update: (data) => {
                 data = data.map(d=>[...d,barStyle]);
-                console.log(data)
                 gdata = google.visualization.arrayToDataTable([columns, ...data]);
                 chart.draw(gdata, options);
             }
         }
-
-
     }
 
-
-    const getData = (url) => {
-        var xmlhttp = new XMLHttpRequest();
-        var response = new Promise(resolve => {
-            xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    resolve(JSON.parse(this.responseText));
-                }
-            }
-        });
-        xmlhttp.open("GET", url, true);
-        xmlhttp.send();
-        return response;
-    }
     const drawChanges = async (chartInfo) => {
-        const data = (await getData(`/sort/changes?take=${MAX_ITEMS}`));
+        const data = (await api.getChanges(MAX_ITEMS));
         chartInfo.update(data);
     }
 
     const drawCommits = async (chartInfo) => {
-        const data = (await getData(`/sort/commits?take=${MAX_ITEMS}`));
+        const data = (await api.getCommits(MAX_ITEMS));
         chartInfo.update(data);
     }
 
@@ -88,11 +70,16 @@ const showReport = async () => {
         });
     }));
 
+    const update = ()=>{
+        drawChanges(charts.filesChart);
+        drawCommits(charts.commitsChart);
+    }
+
+    api.subscribe("FILTER_ITEM_ADDED", update)
+    api.subscribe("FILTER_ITEM_REMOVED", update)
+    api.subscribe("DATE_UPDATED", update)
+
     return {
-        update: () => {
-            console.log("update")
-            drawChanges(charts.filesChart);
-            drawCommits(charts.commitsChart);
-        }
+        update
     };
 }

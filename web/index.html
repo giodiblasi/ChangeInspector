@@ -1,6 +1,7 @@
 <html>
 
 <head>
+    <script src="/assets/api.js"></script>
     <script src="/assets/data.js"></script>
     <script src="/assets/detail.js"></script>
     <script src="/assets/filter.js"></script>
@@ -67,12 +68,13 @@
     </div>
 </body>
 <script type="text/javascript" async>
-    initFilter().update();
-    showReport().then(report => {
+    const client = buildClient();
+    initFilter(client).update();
+    showReport(client).then(report => {
         report.update();
-        initUpdater();
+        initUpdater(client);
 
-        const detail = initDetail();
+        const detail = initDetail(client);
         [
             document.getElementById('chart_div_commits'),
             document.getElementById('chart_div_changes')
@@ -84,17 +86,6 @@
                 detail.clear();
             }, false);
         })
-
-
-
-
-        document
-            .getElementById('date-selector')
-            .addEventListener('data_updated', () => {
-                detail.clear();
-                report.update();
-                showReport();
-            }, false)
 
     });
 
