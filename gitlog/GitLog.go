@@ -40,7 +40,6 @@ type GitLog struct {
 	After     time.Time
 	FilesInfo FilesInfo
 	Commits   CommitsInfo
-	Ignore    []string
 }
 
 /*GetFileInfo ...*/

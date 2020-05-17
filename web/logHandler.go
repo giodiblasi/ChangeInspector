@@ -2,8 +2,10 @@ package web
 
 import (
 	"ChangeInspector/logservice"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -35,4 +37,29 @@ func (handler LogHandler) register(router *mux.Router) {
 		handler.logService.Update(before, after)
 
 	}).Methods("PUT")
+
+	router.HandleFunc("/filter/{file}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		file := strings.ReplaceAll(vars["file"], "$", "/")
+
+		handler.logService.AddFileToFilter(file)
+
+	}).Methods("POST")
+
+	router.HandleFunc("/filter/{file}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		file := strings.ReplaceAll(vars["file"], "$", "/")
+
+		ok := handler.logService.RemoveFileFromFilter(file)
+		if !ok {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+	}).Methods("DELETE")
+
+	router.HandleFunc("/filter", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(handler.logService.Filter)
+
+	}).Methods("GET")
 }

@@ -11,14 +11,6 @@ import (
 const commitSeparator = "---------------------------"
 const commitInfoSeparator = "*******"
 
-func isToExclude(filename string, filestoExclude []string) bool {
-	for _, value := range filestoExclude {
-		if value == filename {
-			return true
-		}
-	}
-	return false
-}
 func execGitLog(gitLog *GitLog, consumer func(string)) {
 	layout := "2006-01-02"
 	cmd := exec.Command(
@@ -65,23 +57,22 @@ func (gitLog *GitLog) parseCommitString(commitStr string) {
 	for _, fileStat := range filterEmpty(filesStats) {
 		fileChanges := strings.Split(fileStat, "\t")
 		fileName := fileChanges[2]
-		if !isToExclude(fileName, gitLog.Ignore) {
 
-			fileAdds, _ := strconv.ParseInt(fileChanges[0], 10, 64)
-			fileRemotions, _ := strconv.ParseInt(fileChanges[1], 10, 64)
+		fileAdds, _ := strconv.ParseInt(fileChanges[0], 10, 64)
+		fileRemotions, _ := strconv.ParseInt(fileChanges[1], 10, 64)
 
-			fileInfo, ok := gitLog.FilesInfo[fileName]
-			if !ok {
-				fileInfo = *emptyFileInfo()
-			}
-
-			gitLog.FilesInfo[fileName] = FileInfo{
-				Commits:        append(fileInfo.Commits, &commit),
-				TotalAdds:      fileInfo.TotalAdds + fileAdds,
-				TotalRemotions: fileInfo.TotalRemotions + fileRemotions,
-				TotalChanges:   fileInfo.TotalChanges + fileAdds + fileRemotions,
-			}
+		fileInfo, ok := gitLog.FilesInfo[fileName]
+		if !ok {
+			fileInfo = *emptyFileInfo()
 		}
+
+		gitLog.FilesInfo[fileName] = FileInfo{
+			Commits:        append(fileInfo.Commits, &commit),
+			TotalAdds:      fileInfo.TotalAdds + fileAdds,
+			TotalRemotions: fileInfo.TotalRemotions + fileRemotions,
+			TotalChanges:   fileInfo.TotalChanges + fileAdds + fileRemotions,
+		}
+
 	}
 	_, hasCommit := gitLog.Commits[commit.Hash]
 	if !hasCommit {
@@ -90,12 +81,11 @@ func (gitLog *GitLog) parseCommitString(commitStr string) {
 }
 
 /*NewGitLog ...*/
-func NewGitLog(path string, before time.Time, after time.Time, filesToExclude []string) GitLog {
+func NewGitLog(path string, before time.Time, after time.Time) GitLog {
 	gitLog := GitLog{
 		Path:   path,
 		Before: before,
 		After:  after,
-		Ignore: filesToExclude,
 	}
 	commitStr := ""
 	gitLog.Commits = make(CommitsInfo)

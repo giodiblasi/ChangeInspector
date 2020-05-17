@@ -3,6 +3,7 @@
 <head>
     <script src="/assets/data.js"></script>
     <script src="/assets/detail.js"></script>
+    <script src="/assets/filter.js"></script>
     <script src="/assets/updater.js"></script>
     <link rel="stylesheet" type="text/css" href="/assets/main.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -51,18 +52,22 @@
                             <li class="list-group-item" id="detail_total_changes"></li>
                         </ul>
                         <div id="detail_changes"></div>
+                        <button class="btn btn-primary" id="add_filter">Filter</button>
                     </div>
                     <div class="card-body" id="card_detail_empty">
                         <h5 class="card-title">File Detail</h5>
                         <p>Select a file from chart to explore details</p>
                     </div>
                 </div>
+                <div>
+                    <ul class="list-group" id="filter"></ul>
+                </div>
             </div>
         </div>
     </div>
 </body>
 <script type="text/javascript" async>
-
+    initFilter().update();
     showReport().then(report => {
         report.update();
         initUpdater();

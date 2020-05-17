@@ -21,6 +21,20 @@ const initDetail = () => {
         return response;
     }
 
+    const addFilter = (fileName) => {
+        var xmlhttp = new XMLHttpRequest();
+        var response = new Promise(resolve => {
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve();
+                }
+            }
+        });
+        xmlhttp.open("POST", `/filter/${fileName.replace(/\//g, '$')}`, true);
+        xmlhttp.send(); 
+        return response;
+    }
+
     const draw = (detail) => {
         var data = google.visualization.arrayToDataTable([
             ['Change', 'Total'],
@@ -43,7 +57,6 @@ const initDetail = () => {
         document.getElementById('detail_total_changes').innerHTML = `Total Changes: ${detail.TotalChanges}`;
     }
 
-    
 
     return {
         update: async (fileName) => {
@@ -52,6 +65,10 @@ const initDetail = () => {
             updateInfo(fileName, detail);
             document.getElementById('card_detail').hidden = false;
             document.getElementById('card_detail_empty').hidden = true;
+            document.getElementById('add_filter').addEventListener('click', ()=>{
+                addFilter(fileName);
+            });
+
         },
         clear: () => {
             document.getElementById('card_detail').hidden = true;

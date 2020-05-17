@@ -25,6 +25,5 @@ const initUpdater = () => {
             update(startDate.value, endDate.value)
             .then(()=>dateSelector.dispatchEvent(new Event('data_updated')))
             .catch(err=>console.log(err))
-            
         });
 }
