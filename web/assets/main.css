@@ -3,11 +3,42 @@
     height: 400px;
 }
 
-#detail_card{
-    width: 500px;
+.info-col{
+    width: 400px;
     margin: 30px;
+}
+
+.info-col .card {
+    margin: 20px;
+}
+
+#filter-card{
+    width: 400px;
+}
+
+#detail_card{
+    width: 400px;
+    height: 420px;
 }
 
 #container{
     margin: 10px;
+}
+
+#detail-header{
+    width: 100%;
+    overflow: auto;
+    padding-bottom: 20px;
+}
+
+#detail-header > .card-title{
+    float: left;
+}
+
+#detail-header > #add_filter{
+    margin-left: 5px;
+}
+
+.btn-icon{
+    margin:0
 }

@@ -1,6 +1,9 @@
 package sorter
 
-import "ChangeInspector/gitlog"
+import (
+	"ChangeInspector/gitlog"
+	"ChangeInspector/utils"
+)
 
 /*LogItem ...*/
 type LogItem struct {
@@ -14,13 +17,15 @@ type SortableLogs struct {
 }
 
 /*NewSorter ...*/
-func NewSorter(gitLog *gitlog.GitLog) SortableLogs {
+func NewSorter(gitLog *gitlog.GitLog, filter []string) SortableLogs {
 	arrayInfo := make([]LogItem, 0)
 	for fileName, fileInfo := range gitLog.FilesInfo {
-		arrayInfo = append(arrayInfo, LogItem{
-			FileName: fileName,
-			Info:     fileInfo,
-		})
+		if !utils.Contains(filter, fileName) {
+			arrayInfo = append(arrayInfo, LogItem{
+				FileName: fileName,
+				Info:     fileInfo,
+			})
+		}
 	}
 	return SortableLogs{
 		logs: arrayInfo,

@@ -2,6 +2,7 @@ package web
 
 import (
 	"ChangeInspector/logservice"
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -39,6 +40,6 @@ func StartServer(logService *logservice.LogService) {
 
 	staticFileServer := http.FileServer(http.Dir("web/assets/"))
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", staticFileServer))
-
+	fmt.Println("server starts to http://localhost:3000")
 	http.ListenAndServe(":3000", router)
 }

@@ -1,8 +1,8 @@
-const initDetail = () => {
+const initDetail = (api) => {
     const details ={};
+    let selectedFile = '';
     google.charts.load('current', { 'packages': ['corechart'] });
     const getData = (fileName) => {
-
         const detail = details[fileName];
         if(detail) return Promise.resolve(detail);
 
@@ -21,7 +21,7 @@ const initDetail = () => {
         return response;
     }
 
-    const draw = (detail) => {
+    draw = (detail) => {
         var data = google.visualization.arrayToDataTable([
             ['Change', 'Total'],
             ['Adds', detail.TotalAdds],
@@ -43,19 +43,29 @@ const initDetail = () => {
         document.getElementById('detail_total_changes').innerHTML = `Total Changes: ${detail.TotalChanges}`;
     }
 
-    
+    const addFileToFilter = () => api.addToFilter(selectedFile);
 
+    const clear = () => {
+        document.getElementById('card_detail').hidden = true;
+        document.getElementById('card_detail_empty').hidden = false;
+    }
+
+    api.subscribe("DATE_UPDATED", clear)
+
+    
     return {
         update: async (fileName) => {
+            selectedFile = fileName;
             const detail = await getData(fileName);
             draw(detail);
             updateInfo(fileName, detail);
             document.getElementById('card_detail').hidden = false;
             document.getElementById('card_detail_empty').hidden = true;
+            const button = document.getElementById('add_filter');
+            button.removeEventListener('click', addFileToFilter);
+            button.addEventListener('click', addFileToFilter);
+
         },
-        clear: () => {
-            document.getElementById('card_detail').hidden = true;
-            document.getElementById('card_detail_empty').hidden = false;
-        }
+        clear
     }
 }

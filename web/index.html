@@ -1,8 +1,10 @@
 <html>
 
 <head>
+    <script src="/assets/api.js"></script>
     <script src="/assets/data.js"></script>
     <script src="/assets/detail.js"></script>
+    <script src="/assets/filter.js"></script>
     <script src="/assets/updater.js"></script>
     <link rel="stylesheet" type="text/css" href="/assets/main.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -41,20 +43,34 @@
                 <div class="bar-chart" id="chart_div_changes"></div>
                 <div class="bar-chart" id="chart_div_commits"></div>
             </div>
-            <div class="col">
+            <div class="col info-col">
                 <div class="card" id="detail_card">
                     <div class="card-body" id="card_detail" hidden>
-                        <h5 class="card-title">File Detail</h5>
+
+                        <div id="detail-header">
+                            <h5 class="card-title">File Detail</h5>
+                            <button class="badge badge-primary badge-pill" id="add_filter">Filter</button>
+                        </div>
+
                         <h5 class="card-subtitle mb-2 text-muted" id="detail_file_name"></h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item" id="detail_total_commits"></li>
                             <li class="list-group-item" id="detail_total_changes"></li>
                         </ul>
                         <div id="detail_changes"></div>
+
                     </div>
                     <div class="card-body" id="card_detail_empty">
                         <h5 class="card-title">File Detail</h5>
                         <p>Select a file from chart to explore details</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="card" id="filter-card">
+                        <div class="card-body">
+                            <h5 class="card-title">File Filter</h5>
+                            <ul class="list-group list-group-flush" id="filter"></ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -62,12 +78,13 @@
     </div>
 </body>
 <script type="text/javascript" async>
-
-    showReport().then(report => {
+    const client = buildClient();
+    initFilter(client).update();
+    showReport(client).then(report => {
         report.update();
-        initUpdater();
+        initUpdater(client);
 
-        const detail = initDetail();
+        const detail = initDetail(client);
         [
             document.getElementById('chart_div_commits'),
             document.getElementById('chart_div_changes')
@@ -79,17 +96,6 @@
                 detail.clear();
             }, false);
         })
-
-
-
-
-        document
-            .getElementById('date-selector')
-            .addEventListener('data_updated', () => {
-                detail.clear();
-                report.update();
-                showReport();
-            }, false)
 
     });
 
