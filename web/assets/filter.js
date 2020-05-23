@@ -3,10 +3,10 @@ const initFilter = (api) =>{
     let itemnodes={}
     const addItem = (fileName) => {
         const item = document.createElement("li");
-        item.className = "list-group-item";
+        item.className = "list-group-item d-flex justify-content-between align-items-center";
         
         const removeFromFilterButton = document.createElement("button");
-        removeFromFilterButton.className = "btn btn-danger";
+        removeFromFilterButton.className = "badge badge-danger badge-pill";
         removeFromFilterButton.innerHTML = "Remove";
         removeFromFilterButton.addEventListener('click', ()=>api.removeFromFilter(fileName));
 

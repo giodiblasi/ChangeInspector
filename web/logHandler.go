@@ -42,7 +42,12 @@ func (handler LogHandler) register(router *mux.Router) {
 		vars := mux.Vars(r)
 		file := strings.ReplaceAll(vars["file"], "$", "/")
 
-		handler.logService.AddFileToFilter(file)
+		added := handler.logService.AddFileToFilter(file)
+		if !added {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, file+" already in filter")
+			return
+		}
 
 	}).Methods("POST")
 

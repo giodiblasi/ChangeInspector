@@ -34,10 +34,14 @@ func (logService *LogService) Update(before time.Time, after time.Time) {
 }
 
 /*AddFileToFilter ...*/
-func (logService *LogService) AddFileToFilter(fileName string) {
+func (logService *LogService) AddFileToFilter(fileName string) bool {
+	if utils.Contains(logService.Filter, fileName) {
+		return false
+	}
 	logService.Filter = append(logService.Filter, fileName)
 	sorter := sorter.NewSorter(logService.GitLog, logService.Filter)
 	logService.SortableLogs = &sorter
+	return true
 }
 
 /*RemoveFileFromFilter ...*/

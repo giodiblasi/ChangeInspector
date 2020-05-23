@@ -43,17 +43,22 @@
                 <div class="bar-chart" id="chart_div_changes"></div>
                 <div class="bar-chart" id="chart_div_commits"></div>
             </div>
-            <div class="col">
+            <div class="col info-col">
                 <div class="card" id="detail_card">
                     <div class="card-body" id="card_detail" hidden>
-                        <h5 class="card-title">File Detail</h5>
+
+                        <div id="detail-header">
+                            <h5 class="card-title">File Detail</h5>
+                            <button class="badge badge-primary badge-pill" id="add_filter">Filter</button>
+                        </div>
+
                         <h5 class="card-subtitle mb-2 text-muted" id="detail_file_name"></h5>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item" id="detail_total_commits"></li>
                             <li class="list-group-item" id="detail_total_changes"></li>
                         </ul>
                         <div id="detail_changes"></div>
-                        <button class="btn btn-primary" id="add_filter">Filter</button>
+
                     </div>
                     <div class="card-body" id="card_detail_empty">
                         <h5 class="card-title">File Detail</h5>
@@ -61,7 +66,12 @@
                     </div>
                 </div>
                 <div>
-                    <ul class="list-group" id="filter"></ul>
+                    <div class="card" id="filter-card">
+                        <div class="card-body">
+                            <h5 class="card-title">File Filter</h5>
+                            <ul class="list-group list-group-flush" id="filter"></ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
