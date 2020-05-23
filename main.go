@@ -16,7 +16,12 @@ func main() {
 	if len(os.Args) > 2 {
 		filesToExclude = os.Args[2]
 	}
-	logService := logservice.NewLogService(gitFolder, before, after, strings.Split(filesToExclude, ";"))
+
+	filter := make([]string, 0)
+	if filesToExclude != "" {
+		filter = strings.Split(filesToExclude, ";")
+	}
+	logService := logservice.NewLogService(gitFolder, before, after, filter)
 	web.StartServer(&logService)
 
 	// Console
