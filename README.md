@@ -3,7 +3,7 @@
 
 :construction: Project Under Construction :construction:
 
-![Screenshot](https://github.com/giodiblasi/ChangeInspector/blob/master/screenshots/ChangeInspector.gif)
+![Screenshot](https://github.com/giodiblasi/ChangeInspector/blob/master/screenshots/example.png)
 
 ## Run
 To launch web application type:
