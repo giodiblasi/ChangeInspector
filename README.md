@@ -6,7 +6,7 @@
 ![Screenshot](https://github.com/giodiblasi/ChangeInspector/blob/master/screenshots/example.png)
 
 ## Run
-To launch web application type:
+To start the web application:
 ```
 > make run path=<repo directory> exclude="file.js;file.go"
 ```
